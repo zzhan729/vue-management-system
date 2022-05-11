@@ -17,12 +17,12 @@
         <span slot="title">Home</span>
       </el-menu-item>
       <el-menu-item index="/goods">
-        <i class="el-icon-document"></i>
+        <i class="el-icon-menu"></i>
         <span slot="title">Goods</span>
       </el-menu-item>
       <el-menu-item index="/params">
-        <i class="el-icon-document"></i>
-        <span slot="title">Params</span>
+        <i class="el-icon-setting"></i>
+        <span slot="title">Setting</span>
       </el-menu-item>
       <el-submenu index="/orders">
         <template slot="title">
