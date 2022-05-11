@@ -10,51 +10,81 @@
     <div class="wrapper">
       <el-table :data="tableData" border>
         <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column prop="date" label="Goods ID" width="100">
+        <el-table-column prop="id" label="Goods ID" width="100">
         </el-table-column>
-        <el-table-column prop="date" label="Name" width="100">
+        <el-table-column
+          prop="title"
+          label="Name"
+          width="100"
+          show-overflow-tooltip
+        >
         </el-table-column>
-        <el-table-column prop="date" label="Price" width="100">
+        <el-table-column prop="price" label="Price" width="120">
         </el-table-column>
-        <el-table-column prop="name" label="Quantity" width="100">
+        <el-table-column prop="num" label="Quantity" width="120">
         </el-table-column>
-        <el-table-column prop="address" label="Type" width="100">
+        <el-table-column prop="category" label="Category" width="100">
         </el-table-column>
-        <el-table-column prop="address" label="Picture"> </el-table-column>
-        <el-table-column prop="address" label="Selling Point">
+        <el-table-column prop="image" label="Image"> </el-table-column>
+        <el-table-column
+          prop="sellPoint"
+          label="Selling Point"
+          width="160"
+          show-overflow-tooltip
+        >
         </el-table-column>
-        <el-table-column prop="address" label="Description"> </el-table-column>
-        <el-table-column prop="address" label="Action" width="180">
+        <el-table-column
+          prop="descs"
+          label="Description"
+          width="100"
+          show-overflow-tooltip
+        >
+        </el-table-column>
+        <el-table-column label="Action" width="280">
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"
-              >Edit</el-button
+            <el-button size="mini">查看</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              @click="handleEdit(scope.$index, scope.row)"
+              icon="el-icon-edit"
+            >
+              编辑</el-button
             >
             <el-button
               size="mini"
               type="danger"
               @click="handleDelete(scope.$index, scope.row)"
-              >Delete</el-button
+              icon="el-icon-delete"
+              >删除</el-button
             >
           </template>
         </el-table-column>
       </el-table>
     </div>
     <!--3. page-->
+    <div>
+      <MyPagination
+        :total="total"
+        :pageSize="pageSize"
+        @changePage="changePage"
+      />
+    </div>
   </div>
 </template>
 
 <script>
+import MyPagination from "../../components/MyPagination.vue";
 export default {
+  components: {
+    MyPagination,
+  },
   data() {
     return {
       input: "",
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-      ],
+      tableData: [],
+      total: 10,
+      pageSize: 1,
     };
   },
   methods: {
@@ -64,22 +94,64 @@ export default {
     handleDelete() {
       /* Delete Content */
     },
+    changePage(num) {
+      this.http(num);
+    },
+    http(page) {
+      this.$api
+        .getGoodsList({
+          page,
+        })
+        .then((res) => {
+          console.log(res.data);
+          if (res.data.status === 200) {
+            this.tableData = res.data.data;
+            this.total = res.data.total;
+            this.pageSize = res.data.pageSize;
+          }
+        });
+    },
+  },
+  created() {
+    this.$api
+      .getGoodsList({
+        page: 1,
+      })
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.status === 200) {
+          this.tableData = res.data.data;
+          this.total = res.data.total;
+          this.pageSize = res.data.pageSize;
+        }
+      });
   },
 };
 </script>
 
 <style lang="less" scoped>
 .goods {
-  margin: 20px;
+  margin: 10px;
 }
-
+.position {
+  // background: #fff;
+  padding: 10px;
+  // border: 1px solid #eee;
+  margin-bottom: 10px;
+}
 .header {
   display: flex;
+  background: #fff;
+  padding: 10px;
+  border: 1px solid #eee;
   button {
     margin-left: 20px;
   }
+  .el-form-item {
+    margin-bottom: 0;
+  }
 }
 .wrapper {
-  margin: 20px 0;
+  margin: 10px 0;
 }
 </style>
