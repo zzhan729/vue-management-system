@@ -6,6 +6,9 @@ const api = {
             params
         })
     },
+    getSearch(params){
+        return axios.get(base.search,{params})
+    }
 }
 
 export default api

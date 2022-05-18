@@ -2,8 +2,8 @@
   <div class="goods">
     <!--1. Search-->
     <div class="header">
-      <el-input v-model="input" placeholder="Enter Something"></el-input>
-      <el-button type="primary">Search</el-button>
+      <el-input @change="searchItem" v-model="input" placeholder="Enter Something"></el-input>
+      <el-button @click="searchItem(input)" type="primary">Search</el-button>
       <el-button type="primary">Add</el-button>
     </div>
     <!--2. table content---->
@@ -85,6 +85,9 @@ export default {
       tableData: [],
       total: 10,
       pageSize: 1,
+      type:1,
+      list:[],
+      currentPage:1,
     };
   },
   methods: {
@@ -95,8 +98,41 @@ export default {
       /* Delete Content */
     },
     changePage(num) {
-      this.http(num);
+      if (this.type == 1){
+        this.http(num);
+      }else{
+        this.tableData = this.list.slice((num - 1) * 3, num * 3)
+      }
+      
     },
+
+    searchItem(val){
+      if (!val) {
+        this.http(1);
+        this.currentPage = 1;
+        this.type = 1;
+        return;
+      }
+      this.$api.getSearch({
+        search:val
+      }).then(res=>{
+        this.currentPage = 1
+        if (res.data.status === 200){
+          this.list = res.data.result;
+          this.total = res.data.result.length;
+          this.pageSize = 3;
+          this.tableData = res.data.result.slice(0,3);
+          this.type = 2;
+        }else{
+            this.tableData = [];
+            this.total = 1;
+            this.pageSize = 1;
+            this.type = 1;
+        }
+      })
+
+    },
+
     http(page) {
       this.$api
         .getGoodsList({
@@ -113,19 +149,7 @@ export default {
     },
   },
   created() {
-    this.$api
-      .getGoodsList({
-        page: 1,
-      })
-      .then((res) => {
-        console.log(res.data);
-        if (res.data.status === 200) {
-          this.tableData = res.data.data;
-          this.total = res.data.total;
-          this.pageSize = res.data.pageSize;
-        }
-      });
-  },
+    this.http(1)  },
 };
 </script>
 
